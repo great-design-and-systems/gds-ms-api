@@ -20,7 +20,8 @@
     "log4js": "^0.6.38",
     "mongoose": "^4.5.3",
     "morgan": "^1.7.0",
-    "password-hash": "^1.2.2"
+    "password-hash": "^1.2.2",
+    "restler": "^3.4.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",

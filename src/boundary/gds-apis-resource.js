@@ -1,12 +1,24 @@
 'use strict';
 var lodash = require('lodash');
+var GdsApis = require('./gds-apis');
+
 function execute(app) {
     app.get('/', function (req, res) {
         var results = '';
         lodash.forEach(process.env, function (key, value) {
-            results += '<div> '+value+'=' + key + '</div>';
+            results += '<div> ' + value + '=' + key + '</div>';
         });
         res.status(200).send(results);
+    });
+
+    app.get('/check-host', function (req, res) {
+        GdsApis.checkHost(req.headers.host, function (err, result) {
+            if (err) {
+                res.status(403).send(err);
+            } else {
+                res.status(200).send(result);
+            }
+        });
     });
 }
 
