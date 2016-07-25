@@ -1,10 +1,9 @@
 'use strict';
-var GetSecurityResource = require('./get-security-resource');
+var GetSecurityResource = require('../common/get-security-resource');
 var rest = require('restler');
 
 function execute(host, callback) {
    new GetSecurityResource('validate-host', function (err, path){
-       console.log('path',path);
         rest.get(path, {
             headers: {
                 host: host

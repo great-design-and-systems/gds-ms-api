@@ -16,6 +16,7 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "express-interceptor": "^1.2.0",
     "lodash": "^4.13.1",
     "log4js": "^0.6.38",
     "mongoose": "^4.5.3",
