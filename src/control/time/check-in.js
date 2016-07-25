@@ -8,12 +8,13 @@ function execute(data, callback) {
             data: data
         }).on('complete', function (result) {
             if (result instanceof Error) {
+
                 callback({
                     message: 'Failed to checkin with data: ' + data
                 });
             } else {
-                callback({
-                    timeInID: result._id
+                callback(undefined, {
+                    timeInID: result.result
                 });
             }
         });

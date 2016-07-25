@@ -19,6 +19,7 @@ function checkIn(host, barcode, when, callback) {
                         });
                     });
                 } else {
+                    console.log('GetStudentProfile');
                     new GetFacultyProfile(barcode, function (err, facultyInfo) {
                         new CreateEntryFromInfo(when, facultyInfo, function (err, entry) {
                             new GetPersonType(entry, function (err, personType) {

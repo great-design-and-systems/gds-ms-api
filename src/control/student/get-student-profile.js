@@ -7,7 +7,7 @@ function execute(barcode, callback) {
     new GetStudentResource(API + barcode, function (err, path) {
         rest.get(path).on('complete', function (result, response) {
             if (result instanceof Error) {
-                if (response.statusCode === 404) {
+                if (response && response.statusCode === 404) {
                     callback({
                         status: 404,
                         message: result.message

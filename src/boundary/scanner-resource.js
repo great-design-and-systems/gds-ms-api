@@ -14,6 +14,7 @@ function execute(app) {
                     timeInID: result.timeInID
                 });
             } else {
+                console.error(err);
                 res.status(500).send({
                     message: 'Failed to checkin'
                 });
