@@ -1,9 +1,10 @@
 'use strict';
 var lodash = require('lodash');
 var GdsApis = require('./gds-apis');
+var API = process.env.API_NAME || '/gds/';
 
 function execute(app) {
-    app.get('/', function (req, res) {
+    app.get(API, function (req, res) {
         var results = '';
         lodash.forEach(process.env, function (key, value) {
             results += '<div> ' + value + '=' + key + '</div>';

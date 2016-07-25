@@ -1,6 +1,6 @@
 'use strict';
 var rest = require('restler');
-var GetStudentResource = require('../common/get-student-resource');
+var GetStudentResource = require('./get-student-resource');
 var API = 'student-profile/';
 
 function execute(barcode, callback) {

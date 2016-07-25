@@ -1,5 +1,5 @@
 'use strict';
-var GetSecurityResource = require('../common/get-security-resource');
+var GetSecurityResource = require('./get-security-resource');
 var rest = require('restler');
 
 function execute(host, callback) {
