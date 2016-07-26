@@ -17,12 +17,14 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "express-interceptor": "^1.2.0",
+    "http": "0.0.0",
     "lodash": "^4.13.1",
     "log4js": "^0.6.38",
     "mongoose": "^4.5.3",
     "morgan": "^1.7.0",
     "password-hash": "^1.2.2",
-    "restler": "^3.4.0"
+    "restler": "^3.4.0",
+    "socket.io": "^1.4.8"
   },
   "devDependencies": {
     "chai": "^3.5.0",

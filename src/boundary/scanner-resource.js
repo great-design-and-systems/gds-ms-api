@@ -2,7 +2,7 @@
 var Scanner = require('./scanner');
 var API = process.env.API_NAME || '/gds/scanner/';
 
-function execute(app) {
+function execute(app, io) {
 
     app.post(API + 'check-in', function (req, res) {
         var requestBody = req.body;
@@ -13,6 +13,7 @@ function execute(app) {
                     message: 'Ok',
                     timeInID: result.timeInID
                 });
+                io.emit('scanned', result);
             } else {
                 console.error(err);
                 res.status(500).send({
