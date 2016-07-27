@@ -23,12 +23,10 @@ function execute(app, sockets) {
         });
     });
 
-    app.put(API + 'check-in-purpose/:timeInID', function (req, res) {
+    app.put(API + 'check-in-purpose', function (req, res) {
         var requestBody = req.body;
         var requestHost = req.headers.host;
-        var timeInID = req.params.timeInID;
-
-        Scanner.checkInPurpose(requestHost, timeInID, requestBody.purpose, function (err, result) {
+        Scanner.checkInPurpose(requestHost, requestBody.timeInID, requestBody.purpose, function (err, result) {
             if (!err) {
                 res.status(200).send(result);
             } else {
