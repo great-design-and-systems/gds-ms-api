@@ -11,7 +11,7 @@ var ScannerResource = require('./src/boundary/scanner-resource');
 var ServerCors = require('./src/config/server-cors');
 var Socket = require('./src/config/socket');
 (function () {
-    new Database();
+    //new Database();
     new Server(app);
     new ServerCors(app, cors);
     new LoggerServer(app);
