@@ -1,2 +1,2 @@
-app: npm  start
+web: npm  start
 test: npm test

@@ -12,7 +12,7 @@ function execute(timeInID, purpose, callback) {
                     message: 'Failed to save purpose ' + timeInID
                 });
             } else {
-                callback({
+                callback(undefined, {
                     message: 'Ok'
                 });
             }
