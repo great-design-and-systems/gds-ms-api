@@ -7,6 +7,7 @@ var CreateEntryFromInfo = require('../control/check-in/create-entry-from-info');
 var CheckIn = require('../control/time/check-in');
 var CheckInPurpose = require('../control/time/check-in-purpose');
 var GetTimeInfo = require('../control/time/get-time-info');
+var CheckInVisitor = require('../control/time/check-in-visitor');
 function checkIn(host, barcode, when, callback) {
     new ValidateHost(host, function (err) {
         if (!err) {
@@ -56,8 +57,23 @@ function getTimeInfo(host, timeInID, callback) {
     });
 }
 
+function checkInVisitor(host, fullname, purpose, when, callback) {
+    new ValidateHost(host, function (err) {
+        if (!err) {
+            new CheckInVisitor({
+                fullname: fullname,
+                purpose: purpose,
+                when: when
+            }, callback);
+        } else {
+            callback(err);
+        }
+    });
+}
+
 module.exports = {
     checkIn: checkIn,
     checkInPurpose: checkInPurpose,
-    getTimeInfo: getTimeInfo
+    getTimeInfo: getTimeInfo,
+    checkInVisitor: checkInVisitor
 };
