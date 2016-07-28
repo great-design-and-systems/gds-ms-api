@@ -40,6 +40,14 @@ gulp.task('server-start', function () {
     server.run([INDEX_FILE]);
 });
 
+gulp.task('server-stop', function () {
+    server.stop();
+});
+
+gulp.task('server-restart', function(){
+    runSequence('server-stop', 'server-start');
+})
+
 gulp.task('server-watch', function () {
     server.run([INDEX_FILE]);
     gulp.watch([SRC_FILES, TEST_FILES], function (event) {

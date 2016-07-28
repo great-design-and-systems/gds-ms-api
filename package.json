@@ -6,7 +6,9 @@
   "scripts": {
     "test": "gulp jshint test watch",
     "start": "gulp start",
-    "gulp": "node_modules/.bin/gulp"
+    "gulp": "node_modules/.bin/gulp",
+    "stop": "gulp server-stop",
+    "restart": "gulp server-restart"
   },
   "keywords": [
     "gds-ms-api"
@@ -26,7 +28,7 @@
     "password-hash": "^1.2.2",
     "restler": "^3.4.0",
     "socket.io": "^1.4.8",
-     "chai": "^3.5.0",
+    "chai": "^3.5.0",
     "chakram": "^1.4.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",

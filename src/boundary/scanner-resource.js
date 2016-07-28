@@ -9,6 +9,7 @@ function execute(app, sockets) {
         var requestHost = req.headers.host;
         Scanner.checkIn(requestHost, requestBody.barcode, requestBody.when, function (err, result) {
             if (!err) {
+                console.log('checkIn', result);
                 res.status(200).send({
                     message: 'Ok',
                     timeInID: result.timeInID

@@ -9,30 +9,42 @@ var CheckInPurpose = require('../control/time/check-in-purpose');
 var GetTimeInfo = require('../control/time/get-time-info');
 var CheckInVisitor = require('../control/time/check-in-visitor');
 function checkIn(host, barcode, when, callback) {
-    new ValidateHost(host, function (err) {
-        if (!err) {
-            new GetSudentProfile(barcode, function (err, studentInfo) {
-                if (!err) {
-                    new CreateEntryFromInfo(when, studentInfo, function (err, entry) {
-                        new GetPersonType(entry, function (err, personType) {
-                            entry.personType = personType;
-                            new CheckIn(entry, callback);
-                        });
-                    });
-                } else {
-                    console.log('GetStudentProfile');
-                    new GetFacultyProfile(barcode, function (err, facultyInfo) {
-                        new CreateEntryFromInfo(when, facultyInfo, function (err, entry) {
-                            new GetPersonType(entry, function (err, personType) {
+    new ValidateHost(host, function (secErr) {
+        if (!secErr) {
+            new GetSudentProfile(barcode, function (errStdnt, studentInfo) {
+                if (!errStdnt) {
+                    console.log('errStdnt', errStdnt);
+                    new CreateEntryFromInfo(when, studentInfo, function (errEntry, entry) {
+                        if (errEntry) {
+                            callback(errEntry);
+                        } else {
+                            new GetPersonType(entry, function (errPrsTyp, personType) {
                                 entry.personType = personType;
                                 new CheckIn(entry, callback);
                             });
-                        });
+                        }
+                    });
+                } else {
+                    new GetFacultyProfile(barcode, function (errFclty, facultyInfo) {
+                        if (errFclty) {
+                            callback(errFclty);
+                        } else {
+                            new CreateEntryFromInfo(when, facultyInfo, function (errEntry, entry) {
+                                if (errEntry) {
+                                    callback(errEntry);
+                                } else {
+                                    new GetPersonType(entry, function (errPrsTyp, personType) {
+                                        entry.personType = personType;
+                                        new CheckIn(entry, callback);
+                                    });
+                                }
+                            });
+                        }
                     });
                 }
             });
         } else {
-            callback(err);
+            callback(secErr);
         }
     });
 }
