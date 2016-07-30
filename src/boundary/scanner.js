@@ -18,7 +18,7 @@ function checkIn(host, barcode, when, callback) {
                         if (errEntry) {
                             callback(errEntry);
                         } else {
-                            new GetPersonType(entry, function (errPrsTyp, personType) {
+                            new GetPersonType(studentInfo, function (errPrsTyp, personType) {
                                 entry.personType = personType;
                                 new CheckIn(entry, callback);
                             });
@@ -33,7 +33,7 @@ function checkIn(host, barcode, when, callback) {
                                 if (errEntry) {
                                     callback(errEntry);
                                 } else {
-                                    new GetPersonType(entry, function (errPrsTyp, personType) {
+                                    new GetPersonType(facultyInfo, function (errPrsTyp, personType) {
                                         entry.personType = personType;
                                         new CheckIn(entry, callback);
                                     });
