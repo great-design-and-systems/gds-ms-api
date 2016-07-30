@@ -10,6 +10,7 @@ var GdsApisResource = require('./src/boundary/gds-apis-resource');
 var ScannerResource = require('./src/boundary/scanner-resource');
 var ServerCors = require('./src/config/server-cors');
 var Socket = require('./src/config/socket');
+var TimeResource = require('./src/boundary/time-resource');
 (function () {
     //new Database();
     new Server(app);
@@ -19,6 +20,7 @@ var Socket = require('./src/config/socket');
     new Socket(app, io, http, function (err, sockets) {
         new ScannerResource(app, sockets);
     });
+    new TimeResource(app);
 })();
 
 module.exports = app;
