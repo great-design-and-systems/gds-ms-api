@@ -15,6 +15,7 @@ function execute(exportId, data, callback) {
                 } else {
                     callback(undefined, {
                         contentType: response.headers['content-type'],
+                        contentLength: response.headers['content-length'],
                         raw: response.raw
                     });
                 }

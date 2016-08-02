@@ -1,23 +1,24 @@
 'use strict';
 var GetFileResource = require('./get-file-resource');
-var FormData = require('form-data');
-function execute(filename, filetype, buffer, userId, callback) {
+var restler = require('restler');
+var fs = require('fs-extra');
+function execute(filePath, fileSize, fileType, userId, callback) {
     new GetFileResource('upload-single-file/' + userId, function (err, path) {
-        var form = new FormData();
-        form.append('uploadedFile', buffer, {
-            filename: filename,
-            contentType: filetype,
-            knownLength: buffer.length
-        });
-        form.submit(path, function (errSubmit, resultSubmit) {
-            if (errSubmit) {
-                console.error('upload-single-file', errSubmit);
-                callback(
-                    { message: 'Failed to submit file ' + filename }
-                );
-            } else {
-                callback(undefined, resultSubmit);
+        restler.post(path, {
+            multipart: true,
+            data: {
+                uploadFile: restler.file(filePath, null, fileSize, null, fileType)
             }
+        }).on('success', function (result) {
+            callback(undefined, result);
+        }).on('error', function (err) {
+            console.error('upload-single-file', err);
+            callback(err);
+        }).on('fail', function (err) {
+            console.error('upload-single-file', err);
+            callback(err);
+        }).on('complete', function () {
+            fs.remove(filePath);
         });
     });
 }
