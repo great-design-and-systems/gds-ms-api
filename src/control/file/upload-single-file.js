@@ -1,19 +1,22 @@
 'use strict';
-var rest = require('restler');
 var GetFileResource = require('./get-file-resource');
-function execute(file, userId, callback) {
+var FormData = require('form-data');
+function execute(filename, filetype, buffer, userId, callback) {
     new GetFileResource('upload-single-file/' + userId, function (err, path) {
-        rest.post(path, {
-            multipart: true,
-            data: {
-                "uploadedFile": file
-            }
-        }).on('complete', function (result, response) {
-            if ((result instanceof Error) || (response && response.statusCode === 404)) {
-                console.error('create-export-csv', result);
-                callback(result);
+        var form = new FormData();
+        form.append('uploadedFile', buffer, {
+            filename: filename,
+            contentType: filetype,
+            knownLength: buffer.length
+        });
+        form.submit(path, function (errSubmit, resultSubmit) {
+            if (errSubmit) {
+                console.error('upload-single-file', errSubmit);
+                callback(
+                    { message: 'Failed to submit file ' + filename }
+                );
             } else {
-                callback(undefined, result);
+                callback(undefined, resultSubmit);
             }
         });
     });

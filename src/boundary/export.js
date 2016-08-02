@@ -3,7 +3,6 @@ var ValidateHost = require('../control/security/validate-host');
 var CreateExportCSV = require('../control/export/create-export-csv');
 var AddExportItemCSV = require('../control/export/add-export-item-csv');
 var UploadSingleFile = require('../control/file/upload-single-file');
-var restler = require('restler');
 module.exports = {
     createExportCSV: createExportCSV,
     addExportItemCSV: addExportItemCSV
@@ -37,7 +36,7 @@ function addExportItemCSV(host, exportId, data, callback) {
                     if (result.ok) {
                         callback(undefined, result);
                     } else {
-                        new UploadSingleFile(result.raw, 0, function (errUpload, resultUpload) {
+                        new UploadSingleFile(exportId + '.csv', 'text/csv', result.raw, 0, function (errUpload, resultUpload) {
                             if (errUpload) {
                                 callback(errUpload);
                             } else {
