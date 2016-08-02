@@ -13,10 +13,7 @@ function execute(exportId, data, callback) {
                 if (result.ok) {
                     callback(undefined, result);
                 } else {
-                    callback(undefined, {
-                        contentType: response.headers['content-type'],
-                        raw: response.raw
-                    });
+                    callback(undefined, result);
                 }
             }
         });

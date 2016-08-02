@@ -23,6 +23,7 @@
     "express": "^4.14.0",
     "express-interceptor": "^1.2.0",
     "form-data": "^1.0.0-rc4",
+    "fs-extra": "^0.30.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-express": "^0.3.5",
