@@ -11,6 +11,7 @@ var ScannerResource = require('./src/boundary/scanner-resource');
 var ServerCors = require('./src/config/server-cors');
 var Socket = require('./src/config/socket');
 var TimeResource = require('./src/boundary/time-resource');
+var ExportResource = require('./src/boundary/export-resource');
 (function () {
     //new Database();
     new Server(app);
@@ -21,6 +22,7 @@ var TimeResource = require('./src/boundary/time-resource');
         new ScannerResource(app, sockets);
     });
     new TimeResource(app);
+    new ExportResource(app);
 })();
 
 module.exports = app;
