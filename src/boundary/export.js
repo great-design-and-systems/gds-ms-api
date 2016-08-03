@@ -21,11 +21,11 @@ module.exports = {
 };
 
 function createExportCSV(host, description, limit, columns, callback) {
-    new ValidateHost(host, function (errHost) {
+    new ValidateHost(host, function(errHost) {
         if (errHost) {
             callback(errHost);
         } else {
-            new CreateExportCSV(description, limit, columns, function (err, result) {
+            new CreateExportCSV(description, limit, columns, function(err, result) {
                 if (err) {
                     callback(err);
                 } else {
@@ -35,12 +35,13 @@ function createExportCSV(host, description, limit, columns, callback) {
         }
     });
 }
+
 function addExportItemCSV(host, exportId, data, callback) {
-    new ValidateHost(host, function (errHost) {
+    new ValidateHost(host, function(errHost) {
         if (errHost) {
             callback(errHost);
         } else {
-            new AddExportItemCSV(exportId, data, function (err, result) {
+            new AddExportItemCSV(exportId, data, function(err, result) {
                 if (err) {
                     callback(err);
                 } else {
@@ -50,12 +51,12 @@ function addExportItemCSV(host, exportId, data, callback) {
                         var filePath = moment().format('MMMM_Do_YYYY_h_mm_ss_a') + '_' + exportId + '.csv';
                         var writer = fs.createWriteStream(filePath, 'utf-8');
                         sbuff(result.raw).pipe(writer);
-                        writer.on('finish', function () {
-                            new UploadSingleFile(filePath, result.contentLength, 'text/csv', 'system', function (errUpload, resultUpload) {
+                        writer.on('finish', function() {
+                            new UploadSingleFile(filePath, result.contentLength, 'text/csv', 'system', function(errUpload, resultUpload) {
                                 if (errUpload) {
                                     callback(errUpload);
                                 } else {
-                                    new UpdateExportCSVFileInfo(exportId, resultUpload.fileId, function (errUpdateExportCSV) {
+                                    new UpdateExportCSVFileInfo(exportId, resultUpload.fileId, function(errUpdateExportCSV) {
                                         if (errUpdateExportCSV) {
                                             callback(errUpdateExportCSV);
                                         } else {
@@ -76,34 +77,45 @@ function addExportItemCSV(host, exportId, data, callback) {
         }
     });
 }
-function addExportItemsCSV(host, exportId, items, index) {
+
+function addExportItemsCSV(host, exportId, items, track, index) {
     if (!index) {
         index = 0;
     }
     if (items instanceof Array) {
         if (index < items.length) {
-            addExportItemCSV(host, exportId, items[index], function (err, result) {
+            addExportItemCSV(host, exportId, items[index], function(err, result) {
                 if (err) {
                     console.error('export', err);
+                    track({
+                        status: 'FAILED',
+                        message: 'An error has occured'
+                    });
                 } else {
                     if (result.ok) {
+                        track(result);
                         index++;
-                        addExportItemsCSV(host, exportId, items, index);
+                        addExportItemsCSV(host, exportId, items, track, index);
+                    }else{
+                         track({ exportId: exportId, status: 'COMPLETED' });
                     }
                 }
             });
+        } else {
+            track({ exportId: exportId, status: 'COMPLETED' });
         }
     } else {
         console.error('export', 'Body must be an array');
     }
 
 }
+
 function getExportCompleted(host, callback) {
-    new ValidateHost(host, function (errHost) {
+    new ValidateHost(host, function(errHost) {
         if (errHost) {
             callback(errHost);
         } else {
-            new GetExportCompleted(function (errExportCompleted, result) {
+            new GetExportCompleted(function(errExportCompleted, result) {
                 if (errExportCompleted) {
                     callback(errExportCompleted);
                 } else {
@@ -114,12 +126,13 @@ function getExportCompleted(host, callback) {
         }
     });
 }
+
 function getExportInProgress(host, callback) {
-    new ValidateHost(host, function (errHost) {
+    new ValidateHost(host, function(errHost) {
         if (errHost) {
             callback(errHost);
         } else {
-            new GetExportInProgress(function (errExportInProgress, result) {
+            new GetExportInProgress(function(errExportInProgress, result) {
                 if (errExportInProgress) {
                     callback(errExportInProgress);
                 } else {
@@ -130,12 +143,13 @@ function getExportInProgress(host, callback) {
         }
     });
 }
+
 function removeExportTrackerById(host, exportId, callback) {
-    new ValidateHost(host, function (errHost) {
+    new ValidateHost(host, function(errHost) {
         if (errHost) {
             callback(errHost);
         } else {
-            new RemoveExportTrackerById(exportId, function (errRemoveTracker, result) {
+            new RemoveExportTrackerById(exportId, function(errRemoveTracker, result) {
                 if (errRemoveTracker) {
                     callback(errRemoveTracker);
                 } else {
@@ -145,12 +159,13 @@ function removeExportTrackerById(host, exportId, callback) {
         }
     });
 }
+
 function removeCompletedExportTracker(host, callback) {
-    new ValidateHost(host, function (errHost) {
+    new ValidateHost(host, function(errHost) {
         if (errHost) {
             callback(errHost);
         } else {
-            new RemoveCompletedTracker(function (errRemoveTracker, result) {
+            new RemoveCompletedTracker(function(errRemoveTracker, result) {
                 if (errRemoveTracker) {
                     callback(errRemoveTracker);
                 } else {
