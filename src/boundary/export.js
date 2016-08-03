@@ -96,8 +96,8 @@ function addExportItemsCSV(host, exportId, items, track, index) {
                         track(result);
                         index++;
                         addExportItemsCSV(host, exportId, items, track, index);
-                    }else{
-                         track({ exportId: exportId, status: 'COMPLETED' });
+                    } else {
+                        track({ exportId: exportId, status: 'COMPLETED' });
                     }
                 }
             });
