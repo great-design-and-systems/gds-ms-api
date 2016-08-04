@@ -50,6 +50,15 @@ module.exports = function (app, sockets) {
             }
         });
     });
+    app.get(API + 'get-export-failed', function (req, res) {
+        Export.getExportFailed(req.headers.host, function (err, result) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(200).send(result);
+            }
+        });
+    });
     app.delete(API + ':exportId', function (req, res) {
         Export.removeExportTrackerById(req.headers.host, req.params.exportId, function (err, result) {
             if (err) {

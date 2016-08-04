@@ -13,13 +13,15 @@ var RemoveExportTrackerById = require('../control/export/remove-export-tracker-b
 var RemoveCompletedTracker = require('../control/export/remove-completed-tracker');
 var DeleteFile = require('../control/file/delete-file');
 var FailExportTracker = require('../control/export/fail-export-tracker');
+var GetExportFailed = require('../control/export/get-export-failed');
 module.exports = {
     createExportCSV: createExportCSV,
     addExportItemsCSV: addExportItemsCSV,
     getExportCompleted: getExportCompleted,
     getExportInProgress: getExportInProgress,
     removeExportTrackerById: removeExportTrackerById,
-    removeCompletedExportTracker: removeCompletedExportTracker
+    removeCompletedExportTracker: removeCompletedExportTracker,
+    getExportFailed: getExportFailed
 };
 
 function createExportCSV(host, description, limit, columns, callback) {
@@ -187,6 +189,21 @@ function removeCompletedExportTracker(host, callback) {
             new RemoveCompletedTracker(function (errRemoveTracker, result) {
                 if (errRemoveTracker) {
                     callback(errRemoveTracker);
+                } else {
+                    callback(undefined, result);
+                }
+            });
+        }
+    });
+}
+function getExportFailed(host, callback) {
+    new ValidateHost(host, function (errHost) {
+        if (errHost) {
+            callback(errHost);
+        } else {
+            new GetExportFailed(function (errExportFailed, result) {
+                if (errExportFailed) {
+                    callback(errExportFailed);
                 } else {
                     callback(undefined, result);
                 }
