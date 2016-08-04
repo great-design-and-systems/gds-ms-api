@@ -12,6 +12,7 @@ var GetExportInProgress = require('../control/export/get-export-inprogress');
 var RemoveExportTrackerById = require('../control/export/remove-export-tracker-by-id');
 var RemoveCompletedTracker = require('../control/export/remove-completed-tracker');
 var DeleteFile = require('../control/file/delete-file');
+var FailExportTracker = require('../control/export/fail-export-tracker');
 module.exports = {
     createExportCSV: createExportCSV,
     addExportItemsCSV: addExportItemsCSV,
@@ -88,9 +89,14 @@ function addExportItemsCSV(host, exportId, items, track, index) {
             addExportItemCSV(host, exportId, items[index], function (err, result) {
                 if (err) {
                     console.error('export', err);
-                    track({
-                        status: 'FAILED',
-                        message: 'An error has occured'
+                    new FailExportTracker(exportId, function (errFailing) {
+                        if (errFailing) {
+                            console.error('export', 'Error even with failing');
+                        }
+                        track({
+                            status: 'FAILED',
+                            message: 'An error has occured'
+                        });
                     });
                 } else {
                     if (result.ok) {
