@@ -12,17 +12,19 @@ var ServerCors = require('./src/config/server-cors');
 var Socket = require('./src/config/socket');
 var TimeResource = require('./src/boundary/time-resource');
 var ExportResource = require('./src/boundary/export-resource');
+var FileResource = require('./src/boundary/file-resource');
 (function() {
-    //new Database();
-    new Server(app);
-    new ServerCors(app, cors);
-    new LoggerServer(app);
-    new GdsApisResource(app);
-    new Socket(app, io, http, function(err, sockets) {
-        new ScannerResource(app, sockets);
-        new ExportResource(app, sockets);
-    });
-    new TimeResource(app);
+  //new Database();
+  new Server(app);
+  new ServerCors(app, cors);
+  new LoggerServer(app);
+  new GdsApisResource(app);
+  new Socket(app, io, http, function(err, sockets) {
+    new ScannerResource(app, sockets);
+    new ExportResource(app, sockets);
+  });
+  new TimeResource(app);
+  new FileResource(app);
 })();
 
 module.exports = app;
