@@ -30,12 +30,13 @@ function execute(app, sockets) {
         Scanner.checkInPurpose(requestHost, requestBody.timeInID, requestBody.purpose, function (err, result) {
             if (!err) {
                 res.status(200).send(result);
+                sockets.emit('scanned', result);
             } else {
                 res.status(500).send(err);
             }
         });
     });
-    
+
     app.get(API + 'get-time-info/:timeInID', function (req, res) {
         var requestHost = req.headers.host;
         var timeInID = req.params.timeInID;
