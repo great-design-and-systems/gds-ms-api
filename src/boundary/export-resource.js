@@ -24,6 +24,8 @@ module.exports = function (app, sockets) {
         Export.addExportItemsCSV(req.headers.host, req.params.exportId, req.body, function (track) {
             if (track.status === 'COMPLETED') {
                 sockets.emit('exporter-complete', track);
+            } else if (track.status === 'FAILED') {
+                sockets.emit('exporter-fail', track);
             } else {
                 sockets.emit('exporter-progress', track);
             }
