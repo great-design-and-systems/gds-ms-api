@@ -4,7 +4,7 @@ var API = process.env.API_NAME || '/gds/export/';
 
 module.exports = function (app, sockets) {
     app.post(API + 'create-export-csv', function (req, res) {
-        Export.createExportCSV(req.headers.host, req.body.description, req.body.limit, req.body.columns, function (err, result) {
+        Export.createExportCSV(req.body.description, req.body.limit, req.body.columns, function (err, result) {
             if (err) {
                 res.status(500).send(err);
             } else {
@@ -21,7 +21,7 @@ module.exports = function (app, sockets) {
         });
     });
     app.put(API + 'add-export-items-csv/:exportId', function (req, res) {
-        Export.addExportItemsCSV(req.headers.host, req.params.exportId, req.body, function (track) {
+        Export.addExportItemsCSV(req.params.exportId, req.body, function (track) {
             if (track.status === 'COMPLETED') {
                 sockets.emit('exporter-complete', track);
             } else if (track.status === 'FAILED') {
@@ -35,7 +35,7 @@ module.exports = function (app, sockets) {
         });
     });
     app.get(API + 'get-export-completed', function (req, res) {
-        Export.getExportCompleted(req.headers.host, function (err, result) {
+        Export.getExportCompleted(function (err, result) {
             if (err) {
                 res.status(500).send(err);
             } else {
@@ -44,7 +44,7 @@ module.exports = function (app, sockets) {
         });
     });
     app.get(API + 'get-export-inprogress', function (req, res) {
-        Export.getExportInProgress(req.headers.host, function (err, result) {
+        Export.getExportInProgress(function (err, result) {
             if (err) {
                 res.status(500).send(err);
             } else {
@@ -53,7 +53,7 @@ module.exports = function (app, sockets) {
         });
     });
     app.get(API + 'get-export-failed', function (req, res) {
-        Export.getExportFailed(req.headers.host, function (err, result) {
+        Export.getExportFailed(function (err, result) {
             if (err) {
                 res.status(500).send(err);
             } else {
@@ -62,7 +62,7 @@ module.exports = function (app, sockets) {
         });
     });
     app.delete(API + ':exportId', function (req, res) {
-        Export.removeExportTrackerById(req.headers.host, req.params.exportId, function (err, result) {
+        Export.removeExportTrackerById(req.params.exportId, function (err, result) {
             if (err) {
                 res.status(500).send(err);
             } else {
@@ -72,7 +72,7 @@ module.exports = function (app, sockets) {
         });
     });
     app.delete(API + 'all/completed-export-tracker', function (req, res) {
-        Export.removeCompletedExportTracker(req.headers.host, function (err, result) {
+        Export.removeCompletedExportTracker(function (err, result) {
             if (err) {
                 res.status(500).send(err);
             } else {

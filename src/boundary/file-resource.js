@@ -2,9 +2,9 @@
 var File = require('./file');
 var API = process.env.API_NAME || '/gds/file/';
 
-module.exports = function(app) {
-  app.get(API + 'download-file/:fileId', function(req, res) {
-    File.downloadFile(req.headers.host, req.params.fileId, function(errDownload, fileResult) {
+module.exports = function (app) {
+  app.get(API + 'download-file/:fileId', function (req, res) {
+    File.downloadFile(req.params.fileId, function (errDownload, fileResult) {
       if (errDownload) {
         res.status(500).send(fileResult);
       } else {

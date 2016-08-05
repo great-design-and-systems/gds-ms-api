@@ -6,8 +6,7 @@ function execute(app, sockets) {
 
     app.post(API + 'check-in', function (req, res) {
         var requestBody = req.body;
-        var requestHost = req.headers.host;
-        Scanner.checkIn(requestHost, requestBody.barcode, requestBody.when, function (err, result) {
+        Scanner.checkIn(requestBody.barcode, requestBody.when, function (err, result) {
             if (!err) {
                 console.log('checkIn', result);
                 res.status(200).send({
@@ -26,8 +25,7 @@ function execute(app, sockets) {
 
     app.put(API + 'check-in-purpose', function (req, res) {
         var requestBody = req.body;
-        var requestHost = req.headers.host;
-        Scanner.checkInPurpose(requestHost, requestBody.timeInID, requestBody.purpose, function (err, result) {
+        Scanner.checkInPurpose(requestBody.timeInID, requestBody.purpose, function (err, result) {
             if (!err) {
                 res.status(200).send(result);
                 sockets.emit('scanned', result);
@@ -38,9 +36,8 @@ function execute(app, sockets) {
     });
 
     app.get(API + 'get-time-info/:timeInID', function (req, res) {
-        var requestHost = req.headers.host;
         var timeInID = req.params.timeInID;
-        Scanner.getTimeInfo(requestHost, timeInID, function (err, result) {
+        Scanner.getTimeInfo(timeInID, function (err, result) {
             if (!err) {
                 res.status(200).send(result);
             } else {
@@ -51,8 +48,7 @@ function execute(app, sockets) {
 
     app.post(API + 'check-in-visitor', function (req, res) {
         var requestBody = req.body;
-        var requestHost = req.headers.host;
-        Scanner.checkInVisitor(requestHost, requestBody.fullname, requestBody.purpose, requestBody.when, function (err, result) {
+        Scanner.checkInVisitor(requestBody.fullname, requestBody.purpose, requestBody.when, function (err, result) {
             if (!err) {
                 res.status(200).send({
                     message: 'Ok',

@@ -1,5 +1,4 @@
 'use strict';
-var ValidateHost = require('../control/security/validate-host');
 var CreateExportCSV = require('../control/export/create-export-csv');
 var AddExportItemCSV = require('../control/export/add-export-item-csv');
 var UploadSingleFile = require('../control/file/upload-single-file');
@@ -24,71 +23,58 @@ module.exports = {
     getExportFailed: getExportFailed
 };
 
-function createExportCSV(host, description, limit, columns, callback) {
-    new ValidateHost(host, function (errHost) {
-        if (errHost) {
-            callback(errHost);
+function createExportCSV(description, limit, columns, callback) {
+    new CreateExportCSV(description, limit, columns, function (err, result) {
+        if (err) {
+            callback(err);
         } else {
-            new CreateExportCSV(description, limit, columns, function (err, result) {
-                if (err) {
-                    callback(err);
-                } else {
-                    callback(undefined, result);
-                }
-            });
+            callback(undefined, result);
         }
     });
 }
 
-function addExportItemCSV(host, exportId, data, callback) {
-    new ValidateHost(host, function (errHost) {
-        if (errHost) {
-            callback(errHost);
+function addExportItemCSV(exportId, data, callback) {
+    new AddExportItemCSV(exportId, data, function (err, result) {
+        if (err) {
+            callback(err);
         } else {
-            new AddExportItemCSV(exportId, data, function (err, result) {
-                if (err) {
-                    callback(err);
-                } else {
-                    if (result.ok) {
-                        callback(undefined, result);
-                    } else {
-                        var filePath = moment().format('MMMM_Do_YYYY_h_mm_ss_a') + '_' + exportId + '.csv';
-                        var writer = fs.createWriteStream(filePath, 'utf-8');
-                        sbuff(result.raw).pipe(writer);
-                        writer.on('finish', function () {
-                            new UploadSingleFile(filePath, result.contentLength, 'text/csv', 'system', function (errUpload, resultUpload) {
-                                if (errUpload) {
-                                    callback(errUpload);
+            if (result.ok) {
+                callback(undefined, result);
+            } else {
+                var filePath = moment().format('MMMM_Do_YYYY_h_mm_ss_a') + '_' + exportId + '.csv';
+                var writer = fs.createWriteStream(filePath, 'utf-8');
+                sbuff(result.raw).pipe(writer);
+                writer.on('finish', function () {
+                    new UploadSingleFile(filePath, result.contentLength, 'text/csv', 'system', function (errUpload, resultUpload) {
+                        if (errUpload) {
+                            callback(errUpload);
+                        } else {
+                            new UpdateExportCSVFileInfo(exportId, resultUpload.fileId, function (errUpdateExportCSV) {
+                                if (errUpdateExportCSV) {
+                                    callback(errUpdateExportCSV);
                                 } else {
-                                    new UpdateExportCSVFileInfo(exportId, resultUpload.fileId, function (errUpdateExportCSV) {
-                                        if (errUpdateExportCSV) {
-                                            callback(errUpdateExportCSV);
-                                        } else {
-                                            callback(undefined, {
-                                                exportId: exportId,
-                                                fileId: resultUpload.fileId,
-                                                status: 'COMPLETED'
-                                            });
-                                        }
+                                    callback(undefined, {
+                                        exportId: exportId,
+                                        fileId: resultUpload.fileId,
+                                        status: 'COMPLETED'
                                     });
                                 }
                             });
-                        });
-                    }
-
-                }
-            });
+                        }
+                    });
+                });
+            }
         }
     });
 }
 
-function addExportItemsCSV(host, exportId, items, track, index) {
+function addExportItemsCSV(exportId, items, track, index) {
     if (!index) {
         index = 0;
     }
     if (items instanceof Array) {
         if (index < items.length) {
-            addExportItemCSV(host, exportId, items[index], function (err, result) {
+            addExportItemCSV(exportId, items[index], function (err, result) {
                 if (err) {
                     console.error('export', err);
                     new FailExportTracker(exportId, function (errFailing) {
@@ -104,7 +90,7 @@ function addExportItemsCSV(host, exportId, items, track, index) {
                     if (result.ok) {
                         track(result);
                         index++;
-                        addExportItemsCSV(host, exportId, items, track, index);
+                        addExportItemsCSV(exportId, items, track, index);
                     } else {
                         track({
                             exportId: exportId,
@@ -125,56 +111,36 @@ function addExportItemsCSV(host, exportId, items, track, index) {
 
 }
 
-function getExportCompleted(host, callback) {
-    new ValidateHost(host, function (errHost) {
-        if (errHost) {
-            callback(errHost);
+function getExportCompleted(callback) {
+    new GetExportCompleted(function (errExportCompleted, result) {
+        if (errExportCompleted) {
+            callback(errExportCompleted);
         } else {
-            new GetExportCompleted(function (errExportCompleted, result) {
-                if (errExportCompleted) {
-                    callback(errExportCompleted);
-                } else {
-                    callback(undefined, result);
-                }
-            });
-
+            callback(undefined, result);
         }
     });
 }
 
-function getExportInProgress(host, callback) {
-    new ValidateHost(host, function (errHost) {
-        if (errHost) {
-            callback(errHost);
+function getExportInProgress(callback) {
+    new GetExportInProgress(function (errExportInProgress, result) {
+        if (errExportInProgress) {
+            callback(errExportInProgress);
         } else {
-            new GetExportInProgress(function (errExportInProgress, result) {
-                if (errExportInProgress) {
-                    callback(errExportInProgress);
-                } else {
-                    callback(undefined, result);
-                }
-            });
-
+            callback(undefined, result);
         }
     });
 }
 
-function removeExportTrackerById(host, exportId, callback) {
-    new ValidateHost(host, function (errHost) {
-        if (errHost) {
-            callback(errHost);
+function removeExportTrackerById(exportId, callback) {
+    new RemoveExportTrackerById(exportId, function (errRemoveTracker, result) {
+        if (errRemoveTracker) {
+            callback(errRemoveTracker);
         } else {
-            new RemoveExportTrackerById(exportId, function (errRemoveTracker, result) {
-                if (errRemoveTracker) {
-                    callback(errRemoveTracker);
+            new DeleteFile(result.fileId, function (err) {
+                if (err) {
+                    callback(err);
                 } else {
-                    new DeleteFile(result.fileId, function (err) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            callback(undefined, result);
-                        }
-                    });
+                    callback(undefined, result);
                 }
             });
         }
@@ -182,32 +148,20 @@ function removeExportTrackerById(host, exportId, callback) {
 }
 
 function removeCompletedExportTracker(host, callback) {
-    new ValidateHost(host, function (errHost) {
-        if (errHost) {
-            callback(errHost);
+    new RemoveCompletedTracker(function (errRemoveTracker, result) {
+        if (errRemoveTracker) {
+            callback(errRemoveTracker);
         } else {
-            new RemoveCompletedTracker(function (errRemoveTracker, result) {
-                if (errRemoveTracker) {
-                    callback(errRemoveTracker);
-                } else {
-                    callback(undefined, result);
-                }
-            });
+            callback(undefined, result);
         }
     });
 }
-function getExportFailed(host, callback) {
-    new ValidateHost(host, function (errHost) {
-        if (errHost) {
-            callback(errHost);
+function getExportFailed(callback) {
+    new GetExportFailed(function (errExportFailed, result) {
+        if (errExportFailed) {
+            callback(errExportFailed);
         } else {
-            new GetExportFailed(function (errExportFailed, result) {
-                if (errExportFailed) {
-                    callback(errExportFailed);
-                } else {
-                    callback(undefined, result);
-                }
-            });
+            callback(undefined, result);
         }
     });
 }

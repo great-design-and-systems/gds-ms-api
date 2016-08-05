@@ -13,18 +13,26 @@ var Socket = require('./src/config/socket');
 var TimeResource = require('./src/boundary/time-resource');
 var ExportResource = require('./src/boundary/export-resource');
 var FileResource = require('./src/boundary/file-resource');
-(function() {
+var InitServices = require('./src/config/init-services');
+(function () {
   //new Database();
-  new Server(app);
-  new ServerCors(app, cors);
-  new LoggerServer(app);
-  new GdsApisResource(app);
-  new Socket(app, io, http, function(err, sockets) {
-    new ScannerResource(app, sockets);
-    new ExportResource(app, sockets);
+  new InitServices(function (err, services) {
+    if (err) {
+      throw err;
+    } else {
+      console.log('services', services);
+      new Server(app);
+      new ServerCors(app, cors);
+      new LoggerServer(app);
+      new GdsApisResource(app);
+      new Socket(app, io, http, function (err, sockets) {
+        new ScannerResource(app, sockets);
+        new ExportResource(app, sockets);
+      });
+      new TimeResource(app);
+      new FileResource(app);
+    }
   });
-  new TimeResource(app);
-  new FileResource(app);
 })();
 
 module.exports = app;
