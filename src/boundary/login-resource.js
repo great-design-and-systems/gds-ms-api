@@ -24,7 +24,9 @@ module.exports = function (app, sockets, services) {
                         });
                     } else {
                         services.securityServicePort.links.createUserSession.execute({
-                            username: req.body.username
+                            data: {
+                            	username: req.body.username
+                            }
                         }, function (errUserSession, sessionResult) {
                             if (errUserSession) {
                                 res.status(401).send({
