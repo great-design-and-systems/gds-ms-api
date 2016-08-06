@@ -1,13 +1,16 @@
 'use strict';
-var Time = require('./time');
 var API = process.env.API_NAME || '/gds/time/';
-
-module.exports = function (app) {
-    app.get(API + 'get-today-records/:currenTimeMilis', function (req, res) {
-        var currenTimeMilis = req.params.currenTimeMilis;
-        Time.getTodayRecords(currenTimeMilis, function (err, result) {
+module.exports = function (app, services) {
+    app.get(API + 'get-today-records/:currentTimeMilis', function (req, res) {
+        var currentTimeMilis = req.params.currentTimeMilis;
+        services.timeServicePort.links.getTodayRecords.execute({
+            params: {
+                currentTimeMilis: currentTimeMilis
+            }
+        }, function (err, result) {
             if (!err) {
-                res.status(200).send(result);
+                res.headers = result.response.headers;
+                res.status(200).send(result.data);
             } else {
                 res.status(200).send([]);
             }

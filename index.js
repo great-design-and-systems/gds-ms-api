@@ -20,17 +20,16 @@ var InitServices = require('./src/config/init-services');
     if (err) {
       throw err;
     } else {
-      console.log('services', services);
       new Server(app);
       new ServerCors(app, cors);
       new LoggerServer(app);
-      new GdsApisResource(app);
+      new GdsApisResource(app, services);
       new Socket(app, io, http, function (err, sockets) {
-        new ScannerResource(app, sockets);
-        new ExportResource(app, sockets);
+        new ScannerResource(app, sockets, services);
+        new ExportResource(app, sockets, services);
       });
-      new TimeResource(app);
-      new FileResource(app);
+      new TimeResource(app, services);
+      new FileResource(app, services);
     }
   });
 })();
