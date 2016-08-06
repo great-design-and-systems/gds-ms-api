@@ -5,7 +5,7 @@ var GetParamObject = require('../control/service/get-param-object');
 var InitServices = require('../config/init-services');
 var SKIPPED_SESSION_CONTEXT = process.env.SKIPPED_SESSION_CONTEXT || 'gds/scanner,gds/login';
 function execute(app, sockets, services) {
-    app.use('*', function(req, res, next) {
+    app.use('*', function (req, res, next) {
         console.log('Validating host ' + req.headers.host);
         var skippedValidationContexts = SKIPPED_SESSION_CONTEXT.split(',');
         var skippedSessionValidation = false;
@@ -17,7 +17,7 @@ function execute(app, sockets, services) {
         }
         services.securityServicePort.links.validateHost.execute({
             params: { host: req.headers.host }
-        }, function(errHost, result) {
+        }, function (errHost, result) {
             if (errHost) {
                 res.headers = result.headers;
                 res.status(403).send(errHost);
@@ -27,9 +27,9 @@ function execute(app, sockets, services) {
             }
         });
     });
-    app.put(API + 'update-services', function(req, res) {
+    app.put(API + 'update-services', function (req, res) {
         services = {};
-        new InitServices(function(errUpdates, updateServices) {
+        new InitServices(function (errUpdates, updateServices) {
             if (errUpdates) {
                 res.status(500).send(errUpdates);
             } else {
@@ -38,73 +38,88 @@ function execute(app, sockets, services) {
             }
         });
     });
-    app.get(API, function(req, res) {
+    app.get(API, function (req, res) {
         res.status(200).send(services);
     });
-    app.use(API + ':serviceName/:link', function(req, res) {
+    app.get(API + ':serviceName', function (req, res) {
         var service = lodash.get(services, req.params.serviceName);
         if (!service) {
             res.status(500).send({
                 message: 'Service: ' + req.params.serviceName + ' does not exists or not running.'
             });
         } else {
-            var link = lodash.get(service.links, req.params.link);
-            if (!link) {
+            res.status(200).send(service);
+        }
+    });
+    app.use(API + ':serviceName/:link', function (req, res, next) {
+        if (req.baseUrl.indexOf('/gds/export/') > - 1 || req.baseUrl.indexOf('/gds/login/') > - 1) {
+            next();
+        } else {
+            var service = lodash.get(services, req.params.serviceName);
+            if (!service) {
                 res.status(500).send({
-                    message: 'Service link: ' + req.params.link + ' is not found.'
+                    message: 'Service: ' + req.params.serviceName + ' does not exists or not running.'
                 });
             } else {
-                var params = req.query.param;
-                var multipart = !!req.query.multipart;
-                var $event = req.query.$event;
-                req.query.param = undefined;
-                req.query.multipart = undefined;
-                lodash.unset(req.query, 'param');
-                lodash.unset(req.query, 'multipart');
-                if (params) {
-                    new GetParamObject(params, function(errParam, paramOs) {
-                        if (errParam) {
-                            res.status(500).send(errParam);
-                        } else {
-                            link.execute({
-                                multipart: multipart,
-                                params: paramOs,
-                                query: req.query,
-                                data: req.body
-                            }, function(errorLinkPost, result) {
-                                if (errorLinkPost) {
-                                    res.status(500).send(errorLinkPost);
-                                } else {
-                                    if ($event) {
-                                        console.log('$event', $event);
-                                    }
-                                    res.headers = result.response.headers;
-                                    res.status(200).send(result.data);
-                                }
-                            });
-                        }
+                var link = lodash.get(service.links, req.params.link);
+                if (!link) {
+                    res.status(500).send({
+                        message: 'Service link: ' + req.params.link + ' is not found.'
                     });
                 } else {
-                    link.execute({
-                        params: params,
-                        multipart: multipart,
-                        query: req.query,
-                        data: req.body
-                    }, function(errorLinkPost, result) {
-                        if (errorLinkPost) {
-                            res.status(500).send(errorLinkPost);
-                        } else {
-                            if ($event) {
-                                console.log('$event', $event);
-                                sockets.emit($event, result);
+                    var params = req.query.param;
+                    var multipart = !!req.query.multipart;
+                    var $event = req.query.$event;
+                    req.query.param = undefined;
+                    req.query.multipart = undefined;
+                    lodash.unset(req.query, 'param');
+                    lodash.unset(req.query, 'multipart');
+                    if (params) {
+                        new GetParamObject(params, function (errParam, paramOs) {
+                            if (errParam) {
+                                res.status(500).send(errParam);
+                            } else {
+                                link.execute({
+                                    multipart: multipart,
+                                    params: paramOs,
+                                    query: req.query,
+                                    data: req.body
+                                }, function (errorLinkPost, result) {
+                                    if (errorLinkPost) {
+                                        res.status(500).send(errorLinkPost);
+                                    } else {
+                                        if ($event) {
+                                            console.log('$event', $event);
+                                        }
+                                        res.headers = result.response.headers;
+                                        res.status(200).send(result.data);
+                                    }
+                                });
                             }
-                            res.headers = result.response.headers;
-                            res.status(200).send(result.data);
-                        }
-                    });
+                        });
+                    } else {
+                        link.execute({
+                            params: params,
+                            multipart: multipart,
+                            query: req.query,
+                            data: req.body
+                        }, function (errorLinkPost, result) {
+                            if (errorLinkPost) {
+                                res.status(500).send(errorLinkPost);
+                            } else {
+                                if ($event) {
+                                    console.log('$event', $event);
+                                    sockets.emit($event, result);
+                                }
+                                res.headers = result.response.headers;
+                                res.status(200).send(result.data);
+                            }
+                        });
+                    }
                 }
             }
         }
+
     });
 }
 
