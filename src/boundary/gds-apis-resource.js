@@ -74,48 +74,37 @@ function execute(app, sockets, services) {
                     req.query.multipart = undefined;
                     lodash.unset(req.query, 'param');
                     lodash.unset(req.query, 'multipart');
+
                     if (params) {
                         new GetParamObject(params, function (errParam, paramOs) {
                             if (errParam) {
                                 res.status(500).send(errParam);
                             } else {
-                                link.execute({
-                                    multipart: multipart,
-                                    params: paramOs,
-                                    query: req.query,
-                                    data: req.body
-                                }, function (errorLinkPost, result) {
-                                    if (errorLinkPost) {
-                                        res.status(500).send(errorLinkPost);
-                                    } else {
-                                        if ($event) {
-                                            console.log('$event', $event);
-                                        }
-                                        res.headers = result.response.headers;
-                                        res.status(200).send(result.data);
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        link.execute({
-                            params: params,
-                            multipart: multipart,
-                            query: req.query,
-                            data: req.body
-                        }, function (errorLinkPost, result) {
-                            if (errorLinkPost) {
-                                res.status(500).send(errorLinkPost);
-                            } else {
-                                if ($event) {
-                                    console.log('$event', $event);
-                                    sockets.emit($event, result);
-                                }
-                                res.headers = result.response.headers;
-                                res.status(200).send(result.data);
+                                params = paramOs;
                             }
                         });
                     }
+
+                    link.execute({
+                        params: params,
+                        multipart: multipart,
+                        query: req.query,
+                        data: req.body
+                    }, function (errorLinkPost, result) {
+                        if (errorLinkPost) {
+                            res.status(500).send(errorLinkPost);
+                        } else {
+                            if ($event) {
+                                console.log('$event', $event);
+                                sockets.emit($event, result);
+                            }
+                            lodash.forEach(result.response.headers, function (value, key) {
+                                res.setHeader(key, value);
+                            });
+                            res.headers = result.response.headers;
+                            res.status(200).send(result.data);
+                        }
+                    });
                 }
             }
         }
