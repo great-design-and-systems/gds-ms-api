@@ -20,6 +20,7 @@
     "chai": "^3.5.0",
     "chakram": "^1.4.0",
     "change-case": "^3.0.0",
+    "cookie-parser": "^1.4.3",
     "cors": "^2.7.1",
     "express": "^4.14.0",
     "express-interceptor": "^1.2.0",

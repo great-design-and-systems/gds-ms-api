@@ -14,6 +14,7 @@ var TimeResource = require('./src/boundary/time-resource');
 var ExportResource = require('./src/boundary/export-resource');
 var FileResource = require('./src/boundary/file-resource');
 var InitServices = require('./src/config/init-services');
+var LoginResource = require('./src/boundary/login-resource');
 (function () {
   //new Database();
   new InitServices(function (err, services) {
@@ -23,10 +24,12 @@ var InitServices = require('./src/config/init-services');
       new Server(app);
       new ServerCors(app, cors);
       new LoggerServer(app);
-      new GdsApisResource(app, services);
+     
       new Socket(app, io, http, function (err, sockets) {
+        new GdsApisResource(app, sockets, services);
         new ScannerResource(app, sockets, services);
         new ExportResource(app, sockets, services);
+        new LoginResource(app, sockets, services);
       });
       new TimeResource(app, services);
       new FileResource(app, services);

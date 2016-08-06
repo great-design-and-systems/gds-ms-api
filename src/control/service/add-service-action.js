@@ -31,6 +31,7 @@ function action(options, callback) {
     if (!options.timeout) {
         options.timeout = process.env.CALL_TIMEOUT || 20000;
     }
+    console.log('options', options);
     var method = 'get';
     if (link.method === 'POST') {
         method = 'post';
@@ -41,7 +42,7 @@ function action(options, callback) {
     }
     if (options && options.params) {
         lodash.forEach(options.params, function (value, key) {
-            url = link.url.replace(':' + key, value);
+            url = url.replace(':' + key, value);
         });
     }
     console.log('request made: ' + url);
