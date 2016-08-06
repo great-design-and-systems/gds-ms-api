@@ -12,7 +12,6 @@ var ServerCors = require('./src/config/server-cors');
 var Socket = require('./src/config/socket');
 var TimeResource = require('./src/boundary/time-resource');
 var ExportResource = require('./src/boundary/export-resource');
-var FileResource = require('./src/boundary/file-resource');
 var InitServices = require('./src/config/init-services');
 var LoginResource = require('./src/boundary/login-resource');
 (function () {
@@ -32,7 +31,6 @@ var LoginResource = require('./src/boundary/login-resource');
         new LoginResource(app, sockets, services);
       });
       new TimeResource(app, services);
-      new FileResource(app, services);
     }
   });
 })();
