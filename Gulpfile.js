@@ -18,11 +18,9 @@ gulp.task('default', function () {
 gulp.task('test', function () {
     return gulp.src(TEST_FILES, {
         read: false
-    })
-        .pipe(mocha())
-        .pipe(mocha({
-            reporter: 'nyan'
-        }));
+    }).pipe(mocha({
+        reporter: 'nyan'
+    }));
 });
 
 gulp.task('jshint', function () {
@@ -44,7 +42,7 @@ gulp.task('server-stop', function () {
     server.stop();
 });
 
-gulp.task('server-restart', function(){
+gulp.task('server-restart', function () {
     runSequence('server-stop', 'server-start');
 })
 

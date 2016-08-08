@@ -18,6 +18,7 @@ var LoginResource = require('./src/boundary/login-resource');
   //new Database();
   new InitServices(function (err, services) {
     if (err) {
+      console.error(err);
       throw err;
     } else {
       new Server(app);
