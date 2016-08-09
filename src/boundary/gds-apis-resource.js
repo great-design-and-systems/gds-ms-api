@@ -18,9 +18,8 @@ function execute(app, sockets, services) {
         }
         services.securityServicePort.links.validateHost.execute({
             params: { host: req.headers.host }
-        }, function(errHost, result) {
+        }, function(errHost) {
             if (errHost) {
-                res.headers = result.headers;
                 res.status(403).send(errHost);
             } else {
                 console.log('skippedSessionValidation', skippedSessionValidation);
@@ -53,7 +52,7 @@ function execute(app, sockets, services) {
         }
     });
     app.use(API + ':serviceName/:link', function(req, res, next) {
-        if (req.baseUrl.indexOf('/gds/export/') > -1 || req.baseUrl.indexOf('/gds/login/') > -1) {
+        if (req.baseUrl.indexOf('/gds/export/') > -1 || req.baseUrl.indexOf('/gds/login/') > -1 || req.baseUrl.indexOf('/gds/scanner/') > -1) {
             next();
         } else {
             var service = lodash.get(services, req.params.serviceName);

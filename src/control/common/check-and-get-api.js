@@ -2,7 +2,7 @@
 var restler = require('restler');
 function execute(apiUrl, callback) {
     restler.get(apiUrl, {
-        timeout: 20000
+        timeout: 50000
     }).on('success', function (data) {
         callback(undefined, data);
     }).on('error', function (reason) {
