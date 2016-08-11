@@ -11,7 +11,7 @@ function execute(app, sockets, services) {
         var skippedValidationContexts = SKIPPED_SESSION_CONTEXT.split(',');
         var skippedSessionValidation = false;
         for (var s = 0; s < skippedValidationContexts.length; s++) {
-            skippedSessionValidation = req.baseUrl.indexOf(skippedValidationContexts[0]) > -1;
+            skippedSessionValidation = req.baseUrl.indexOf(skippedValidationContexts[s]) > -1;
             if (skippedSessionValidation) {
                 break;
             }
@@ -22,7 +22,7 @@ function execute(app, sockets, services) {
             if (errHost) {
                 res.status(403).send(errHost);
             } else {
-                console.log('headers', req.cookies.GDSSESSIONID);
+                console.log('session', req.cookies.GDSSESSIONID);
                 console.log('skippedSessionValidation', skippedSessionValidation);
                 if (skippedSessionValidation) {
                     next();
