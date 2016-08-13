@@ -3,7 +3,7 @@ var API = process.env.API_NAME || '/gds/';
 var lodash = require('lodash');
 var GetParamObject = require('../control/service/get-param-object');
 var InitServices = require('../config/init-services');
-var SKIPPED_SESSION_CONTEXT = process.env.SKIPPED_SESSION_CONTEXT || 'gds/scanner,gds/login,gds,gds/update-service';
+var SKIPPED_SESSION_CONTEXT = process.env.SKIPPED_SESSION_CONTEXT || 'gds/scanner,gds/login,gds,gds/update-service,gds/schoolConfigServicePort';
 
 function execute(app, sockets, services) {
     app.use('/gds/*', function (req, res, next) {
@@ -84,11 +84,14 @@ function execute(app, sockets, services) {
                 } else {
                     var params = req.query.param;
                     var multipart = !!req.query.multipart;
+                    var isFile = !!req.query.isFile;
                     var $event = req.query.$event;
                     req.query.param = undefined;
                     req.query.multipart = undefined;
+                    req.query.isFile = undefined;
                     lodash.unset(req.query, 'param');
                     lodash.unset(req.query, 'multipart');
+                    lodash.unset(req.query, 'isFile');
 
                     if (params) {
                         new GetParamObject(params, function (errParam, paramOs) {
@@ -113,11 +116,11 @@ function execute(app, sockets, services) {
                                 console.log('$event', $event);
                                 sockets.emit($event, result);
                             }
-                            if (result.response) {
+                            if (isFile && result.response) {
                                 lodash.forEach(result.response.headers, function (value, key) {
+                                    console.log('header', key + ':' + value);
                                     res.setHeader(key, value);
                                 });
-                                res.headers = result.response.headers;
                             }
                             res.status(200).send(result.data);
                         }
