@@ -8,7 +8,7 @@ var SetDefaultProtocol = require('../control/common/set-default-protocol');
 function execute(callback) {
     var servicePorts = [];
     lodash.forEach(process.env, function(value, key) {
-        if (key.match(/.*_(SERVICE_PORT)=/g)) {
+        if (key.match(/SERVICE_PORT$/g)) {
             console.log('matches', key);
             var port = {};
             lodash.set(port, 'key', key);
