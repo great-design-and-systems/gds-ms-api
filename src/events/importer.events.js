@@ -5,17 +5,15 @@ function execute(hostSocket) {
     console.log('Started listening to ', process.env.IMPORT_SERVICE_PORT);
     socket.on('import-tracker', function(data) {
         console.log('have imported ', data);
-        hostSocket.emit('import-tracker', data);
+        hostSocket.emit('importer-progress', data);
     });
     socket.on('import-fail', function(err) {
         console.error('import has failed', err);
-        hostSocket.emit('import-fail');
+        hostSocket.emit('importer-fail');
     });
     socket.on('import-complete', function() {
         console.log('import has finished');
-        hostSocket.emit('import-complete');
+        hostSocket.emit('importer-complete');
     });
 }
-z
-
 module.exports = execute;
