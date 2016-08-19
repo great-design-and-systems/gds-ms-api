@@ -2,9 +2,11 @@
 var restler = require('restler');
 var lodash = require('lodash');
 var SetDefaultProtocol = require('../common/set-default-protocol');
+var fs = require('fs');
+
 function execute(links, callback) {
     try {
-        lodash.forEach(links, function (link) {
+        lodash.forEach(links, function(link) {
             link.execute = action;
         });
         callback(undefined, links);
@@ -18,7 +20,7 @@ function action(options, callback) {
     /*jshint validthis:true */
     var link = this;
     var url;
-    new SetDefaultProtocol(link.url, function (err, httpUrl) {
+    new SetDefaultProtocol(link.url, function(err, httpUrl) {
         url = httpUrl;
     });
     if (options instanceof Function) {
@@ -41,28 +43,37 @@ function action(options, callback) {
         method = 'del';
     }
     if (options && options.params) {
-        lodash.forEach(options.params, function (value, key) {
+        lodash.forEach(options.params, function(value, key) {
             url = url.replace(':' + key, value);
         });
     }
     console.log('request made: ' + url);
+    if (options.multipart) {
+        var file = restler.file(options.data.path, options.data.originalFilename, options.data.size, null, options.data.type);
+        lodash.set(options, 'data', {});
+        lodash.set(options.data, options.multipartField, file);
+        console.log('data converted to rest file', options);
+    }
     lodash.get(restler, method)(url, options)
-        .on('success', function (result, response) {
+        .on('success', function(result, response) {
             console.log('request success: ' + url);
             callback(undefined, {
                 data: result,
                 response: response
             });
+            if (options.multipart) {
+                fs.unlink(lodash.get(options.data, options.multipartField).path);
+            }
         })
-        .on('error', function (reason, response) {
+        .on('error', function(reason, response) {
             console.error('ERROR: ' + url, reason);
             callback(reason, response);
         })
-        .on('fail', function (reason, response) {
+        .on('fail', function(reason, response) {
             console.error('FAIL: ' + url, reason);
             callback(reason, response);
         })
-        .on('timeout', function (reason, response) {
+        .on('timeout', function(reason, response) {
             console.error('TIMEOUT: ' + link.url, reason);
             callback(reason, response);
         });
