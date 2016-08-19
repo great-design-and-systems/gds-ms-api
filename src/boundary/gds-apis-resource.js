@@ -119,10 +119,6 @@ function execute(app, sockets, services) {
                         if (errorLinkPost) {
                             res.status(500).send(errorLinkPost);
                         } else {
-                            if ($event) {
-                                console.log('$event', $event);
-                                sockets.emit($event, result);
-                            }
                             if (isFile && result.response) {
                                 lodash.forEach(result.response.headers, function(value, key) {
                                     console.log('header', key + ':' + value);
@@ -130,6 +126,10 @@ function execute(app, sockets, services) {
                                 });
                             }
                             res.status(200).send(result.data);
+                            if ($event) {
+                                console.log('$event', $event);
+                                sockets.emit($event, result.data);
+                            }
                         }
                     });
 
