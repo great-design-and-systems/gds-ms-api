@@ -1,5 +1,5 @@
 'use strict';
-var SetDefaultProtocol = require('../control/common/set-default-protocol')
+var SetDefaultProtocol = require('../control/common/set-default-protocol');
 
 function execute(hostSocket) {
     new SetDefaultProtocol(process.env.IMPORT_SERVICE_PORT, function(err, url) {
