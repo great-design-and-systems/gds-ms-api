@@ -116,7 +116,7 @@ function execute(app, sockets, services) {
                         query: req.query,
                         data: data
                     }, function(errorLinkPost, result) {
-                        if (errorLinkPost) {
+                        if (errorLinkPost || !result) {
                             res.status(500).send(errorLinkPost);
                         } else {
                             if (isFile && result.response) {
