@@ -13,7 +13,7 @@ var RemoveCompletedTracker = require('../control/export/remove-completed-tracker
 var DeleteFile = require('../control/file/delete-file');
 var FailExportTracker = require('../control/export/fail-export-tracker');
 var GetExportFailed = require('../control/export/get-export-failed');
-var FILE_HOME_DIR = process.env.FILE_HOME_DIR || '/home/rickzx98/file-server';
+var FILE_HOME_DIR = process.env.FILE_HOME_DIR || 'files';
 var path = require('path');
 
 module.exports = {
