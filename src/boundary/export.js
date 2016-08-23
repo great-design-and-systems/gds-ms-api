@@ -45,7 +45,8 @@ function addExportItemCSV(exportId, data, callback) {
                 callback(undefined, result);
             } else {
                 var filePath = moment().format('MMMM_Do_YYYY_h_mm_ss_a') + '_' + exportId + '.csv';
-                var writer = fs.createWriteStream(path.join(FILE_HOME_DIR, filePath), 'utf-8');
+                filePath = path.join(FILE_HOME_DIR, filePath);
+                var writer = fs.createWriteStream(filePath, 'utf-8');
                 sbuff(result.raw).pipe(writer);
                 writer.on('finish', function() {
                     new UploadSingleFile(filePath, result.contentLength, 'text/csv', 'system', function(errUpload, resultUpload) {
