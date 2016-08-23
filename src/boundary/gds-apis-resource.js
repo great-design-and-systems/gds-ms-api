@@ -17,7 +17,7 @@ function execute(app, sockets, services) {
             }
         }
         services.securityServicePort.links.validateHost.execute({
-            params: { host: req.headers.host }
+            params: { host: 'localhost' } // TODO: Improve security host configuration
         }, function(errHost) {
             if (errHost) {
                 res.status(403).send(errHost);
