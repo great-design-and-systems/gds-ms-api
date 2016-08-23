@@ -13,6 +13,9 @@ var RemoveCompletedTracker = require('../control/export/remove-completed-tracker
 var DeleteFile = require('../control/file/delete-file');
 var FailExportTracker = require('../control/export/fail-export-tracker');
 var GetExportFailed = require('../control/export/get-export-failed');
+var FILE_HOME_DIR = process.env.FILE_HOME_DIR || '/home/rickzx98/file-server';
+var path = require('path');
+
 module.exports = {
     createExportCSV: createExportCSV,
     addExportItemsCSV: addExportItemsCSV,
@@ -24,7 +27,7 @@ module.exports = {
 };
 
 function createExportCSV(description, limit, columns, callback) {
-    new CreateExportCSV(description, limit, columns, function (err, result) {
+    new CreateExportCSV(description, limit, columns, function(err, result) {
         if (err) {
             callback(err);
         } else {
@@ -34,7 +37,7 @@ function createExportCSV(description, limit, columns, callback) {
 }
 
 function addExportItemCSV(exportId, data, callback) {
-    new AddExportItemCSV(exportId, data, function (err, result) {
+    new AddExportItemCSV(exportId, data, function(err, result) {
         if (err) {
             callback(err);
         } else {
@@ -42,14 +45,14 @@ function addExportItemCSV(exportId, data, callback) {
                 callback(undefined, result);
             } else {
                 var filePath = moment().format('MMMM_Do_YYYY_h_mm_ss_a') + '_' + exportId + '.csv';
-                var writer = fs.createWriteStream(filePath, 'utf-8');
+                var writer = fs.createWriteStream(path.join(FILE_HOME_DIR, filePath), 'utf-8');
                 sbuff(result.raw).pipe(writer);
-                writer.on('finish', function () {
-                    new UploadSingleFile(filePath, result.contentLength, 'text/csv', 'system', function (errUpload, resultUpload) {
+                writer.on('finish', function() {
+                    new UploadSingleFile(filePath, result.contentLength, 'text/csv', 'system', function(errUpload, resultUpload) {
                         if (errUpload) {
                             callback(errUpload);
                         } else {
-                            new UpdateExportCSVFileInfo(exportId, resultUpload.fileId, function (errUpdateExportCSV) {
+                            new UpdateExportCSVFileInfo(exportId, resultUpload.fileId, function(errUpdateExportCSV) {
                                 if (errUpdateExportCSV) {
                                     callback(errUpdateExportCSV);
                                 } else {
@@ -74,10 +77,10 @@ function addExportItemsCSV(exportId, items, track, index) {
     }
     if (items instanceof Array) {
         if (index < items.length) {
-            addExportItemCSV(exportId, items[index], function (err, result) {
+            addExportItemCSV(exportId, items[index], function(err, result) {
                 if (err) {
                     console.error('export', err);
-                    new FailExportTracker(exportId, function (errFailing) {
+                    new FailExportTracker(exportId, function(errFailing) {
                         if (errFailing) {
                             console.error('export', 'Error even with failing');
                         }
@@ -112,7 +115,7 @@ function addExportItemsCSV(exportId, items, track, index) {
 }
 
 function getExportCompleted(callback) {
-    new GetExportCompleted(function (errExportCompleted, result) {
+    new GetExportCompleted(function(errExportCompleted, result) {
         if (errExportCompleted) {
             callback(errExportCompleted);
         } else {
@@ -122,7 +125,7 @@ function getExportCompleted(callback) {
 }
 
 function getExportInProgress(callback) {
-    new GetExportInProgress(function (errExportInProgress, result) {
+    new GetExportInProgress(function(errExportInProgress, result) {
         if (errExportInProgress) {
             callback(errExportInProgress);
         } else {
@@ -132,11 +135,11 @@ function getExportInProgress(callback) {
 }
 
 function removeExportTrackerById(exportId, callback) {
-    new RemoveExportTrackerById(exportId, function (errRemoveTracker, result) {
+    new RemoveExportTrackerById(exportId, function(errRemoveTracker, result) {
         if (errRemoveTracker) {
             callback(errRemoveTracker);
         } else {
-            new DeleteFile(result.fileId, function (err) {
+            new DeleteFile(result.fileId, function(err) {
                 if (err) {
                     callback(err);
                 } else {
@@ -148,7 +151,7 @@ function removeExportTrackerById(exportId, callback) {
 }
 
 function removeCompletedExportTracker(host, callback) {
-    new RemoveCompletedTracker(function (errRemoveTracker, result) {
+    new RemoveCompletedTracker(function(errRemoveTracker, result) {
         if (errRemoveTracker) {
             callback(errRemoveTracker);
         } else {
@@ -156,8 +159,9 @@ function removeCompletedExportTracker(host, callback) {
         }
     });
 }
+
 function getExportFailed(callback) {
-    new GetExportFailed(function (errExportFailed, result) {
+    new GetExportFailed(function(errExportFailed, result) {
         if (errExportFailed) {
             callback(errExportFailed);
         } else {
