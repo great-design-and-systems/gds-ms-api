@@ -42,7 +42,7 @@ function execute(app, sockets, services) {
             }
         });
     });
-    app.put(API + 'update-services', function(req, res) {
+    app.get(API + 'update-services', function(req, res) {
         services = {};
         new InitServices(function(errUpdates, updateServices) {
             if (errUpdates) {

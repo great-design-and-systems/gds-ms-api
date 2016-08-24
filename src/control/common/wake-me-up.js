@@ -8,7 +8,7 @@ module.exports = function () {
     if (HEROKU_DEPLOYED) {
         console.log('WAKE ME UP BEFORE YOU GO GO!');
         setInterval(function () {
-            http.put(HEROKU_URL_TO_WAKE);
+            http.get(HEROKU_URL_TO_WAKE);
         }, HEROKU_WAKE_INTERVAL); // every 5 minutes (300000)
     }
 };
