@@ -15,9 +15,10 @@ var ExportResource = require('./src/boundary/export-resource');
 var InitServices = require('./src/config/init-services');
 var LoginResource = require('./src/boundary/login-resource');
 var ImportEvents = require('./src/events/importer.events');
-(function() {
+var WakeMeUp = require('./src/control/common/wake-me-up');
+(function () {
     //new Database();
-    new InitServices(function(err, services) {
+    new InitServices(function (err, services) {
         if (err) {
             console.error(err);
             throw err;
@@ -26,7 +27,7 @@ var ImportEvents = require('./src/events/importer.events');
             new ServerCors(app, cors);
             new LoggerServer(app);
 
-            new Socket(app, io, http, function(err, sockets) {
+            new Socket(app, io, http, function (err, sockets) {
                 new GdsApisResource(app, sockets, services);
                 new ScannerResource(app, sockets, services);
                 new ExportResource(app, sockets, services);
@@ -35,7 +36,7 @@ var ImportEvents = require('./src/events/importer.events');
                 new ImportEvents(sockets, services);
             });
             new TimeResource(app, services);
-
+            new WakeMeUp();
         }
     });
 })();
