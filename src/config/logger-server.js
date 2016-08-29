@@ -7,7 +7,7 @@ var APP_NAME = process.env.APP_NAME || 'gds_api';
 module.exports = function(app) {
     log4js.configure({
         appenders: [
-            { type: 'console', filename: LOG_FILE, category: APP_NAME },
+            { type: 'console' },
             { type: 'file', filename: LOG_FILE, category: APP_NAME }
         ],
         replaceConsole: true
