@@ -45,12 +45,13 @@
     "mongoose": "^4.5.3",
     "morgan": "^1.7.0",
     "password-hash": "^1.2.2",
-    "restler": "^3.4.0",
+    "restler": "git+http://github.com/nayanbhana/restler.git",
     "run-sequence": "^1.2.2",
     "should": "^9.0.2",
     "simple-bufferstream": "^1.0.0",
     "sinon": "^1.17.4",
     "socket.io": "^1.4.8",
+    "socket.io-client": "^1.4.8",
     "stream-buffers": "^3.0.0"
   }
 }
