@@ -10,6 +10,7 @@
     "gulp": "node_modules/.bin/gulp",
     "stop": "gulp server-stop",
     "restart": "gulp server-restart",
+    "container-start": "/bin/bash /app/scripts/start.sh",
     "container": "gulp pull && gulp start"
   },
   "keywords": [
