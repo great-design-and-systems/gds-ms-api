@@ -3,7 +3,7 @@ var API = process.env.API_NAME || '/gds/';
 var lodash = require('lodash');
 var GetParamObject = require('../control/service/get-param-object');
 var InitServices = require('../config/init-services');
-var SKIPPED_SESSION_CONTEXT = process.env.SKIPPED_SESSION_CONTEXT || 'gds/scanner,gds/login,gds,gds/update-service,gds/schoolConfigServicePort';
+var SKIPPED_SESSION_CONTEXT = process.env.SKIPPED_SESSION_CONTEXT || 'gds/scanner,gds/login,gds,gds/update-service,gds/schoolConfigServicePort,api/users/register';
 
 function execute(app, sockets, services) {
     app.use('/gds/*', function(req, res, next) {
