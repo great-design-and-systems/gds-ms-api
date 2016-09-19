@@ -17,6 +17,7 @@ function checkIn(barcode, when, callback) {
                 } else {
                     new GetPersonType(studentInfo, function (errPrsTyp, personType) {
                         entry.personType = personType;
+                        entry.imageId = studentInfo.imageId;
                         new CheckIn(entry, callback);
                     });
                 }
@@ -32,6 +33,7 @@ function checkIn(barcode, when, callback) {
                         } else {
                             new GetPersonType(facultyInfo, function (errPrsTyp, personType) {
                                 entry.personType = personType;
+                                entry.imageId = facultyInfo.imageId;
                                 new CheckIn(entry, callback);
                             });
                         }
