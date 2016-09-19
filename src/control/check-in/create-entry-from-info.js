@@ -17,6 +17,7 @@ function createEntry(when, info) {
     entry.fullname = info.lastName + ', ' + info.firstName + ' ' + (info.middleName ? info.middleName : '');
     entry.department = info.department;
     entry.studentLevel = info.level;
+    entry.imageId = info.imageId;
     return entry;
 }
 
