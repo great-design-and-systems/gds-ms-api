@@ -49,7 +49,8 @@ function execute(app, sockets) {
     app.post(API + 'check-in-visitor', function (req, res) {
         var requestBody = req.body;
         Scanner.checkInVisitor(requestBody.fullname, requestBody.purpose, requestBody.when, function (err, result) {
-            if (!err) {
+            if (!err) {  
+            	sockets.emit('scanned', result);
                 res.status(200).send({
                     message: 'Ok',
                     timeInID: result.timeInID
