@@ -1,6 +1,5 @@
 var Database = require('./src/config/database');
 var Server = require('./src/config/server');
-var LoggerServer = require('./src/config/logger-server');
 var express = require('express');
 var app = express();
 var http = require('http');
@@ -12,32 +11,35 @@ var ServerCors = require('./src/config/server-cors');
 var Socket = require('./src/config/socket');
 var TimeResource = require('./src/boundary/time-resource');
 var ExportResource = require('./src/boundary/export-resource');
-var InitServices = require('./src/config/init-services');
 var LoginResource = require('./src/boundary/login-resource');
 var ImportEvents = require('./src/events/importer.events');
 var WakeMeUp = require('./src/control/common/wake-me-up');
+var GdsConfig = new require('gds-config');
+var gdsUtil = new GdsConfig.GDSUtil;
+var gdsService = new GdsConfig.GDSServices;
+
 (function () {
     //new Database();
-    new InitServices(function (err, services) {
-        if (err) {
-            console.error(err);
-            throw err;
-        } else {
-            new Server(app);
-            new ServerCors(app, cors);
-            new LoggerServer(app);
-
-            new Socket(app, io, http, function (err, sockets) {
-                new GdsApisResource(app, sockets, services);
-                new ScannerResource(app, sockets, services);
-                new ExportResource(app, sockets, services);
-                new LoginResource(app, sockets, services);
-
-                new ImportEvents(sockets, services);
-            });
-            new TimeResource(app, services);
-            new WakeMeUp();
-        }
+    gdsUtil.getLogger(function (err) {
+        gdsService.initServices(function (err, services) {
+            if (err) {
+                global.gdsLogger.logError(err);
+                throw err;
+            } else {
+                global.gdsServices = services;
+                new Server(app);
+                new ServerCors(app, cors);
+                new Socket(app, io, http, function (err, sockets) {
+                    new GdsApisResource(app, sockets);
+                    new ScannerResource(app, sockets, services);
+                    new ExportResource(app, sockets, services);
+                    new LoginResource(app, sockets, services);
+                    new ImportEvents(sockets, services);
+                });
+                new TimeResource(app, services);
+                new WakeMeUp();
+            }
+        });
     });
 })();
 

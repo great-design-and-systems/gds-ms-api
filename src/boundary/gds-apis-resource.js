@@ -2,12 +2,13 @@
 var API = process.env.API_NAME || '/gds/';
 var lodash = require('lodash');
 var GetParamObject = require('../control/service/get-param-object');
-var InitServices = require('../config/init-services');
 var SKIPPED_SESSION_CONTEXT = process.env.SKIPPED_SESSION_CONTEXT || 'gds/scanner,gds/login,gds,gds/update-service,gds/schoolConfigServicePort,api/users/register';
+var GdsConfig = new require('gds-config');
+var gdsService = new GdsConfig.GDSServices;
 
-function execute(app, sockets, services) {
-    app.use('/gds/*', function(req, res, next) {
-        console.log('Validating host ' + req.headers.host);
+function execute(app, sockets) {
+    app.use('/gds/*', function (req, res, next) {
+        global.gdsLogger.logInfo('Validating host ' + req.headers.host);
         var skippedValidationContexts = SKIPPED_SESSION_CONTEXT.split(',');
         var skippedSessionValidation = false;
         for (var s = 0; s < skippedValidationContexts.length; s++) {
@@ -16,20 +17,20 @@ function execute(app, sockets, services) {
                 break;
             }
         }
-        services.securityServicePort.links.validateHost.execute({
+        global.gdsServices.securityServicePort.links.validateHost.execute({
             params: { host: req.headers.host } // TODO: Improve security host configuration
-        }, function(errHost) {
+        }, function (errHost) {
             if (errHost) {
                 res.status(403).send(errHost);
             } else {
-                console.log('session', req.cookies.GDSSESSIONID);
-                console.log('skippedSessionValidation', skippedSessionValidation);
+                global.gdsLogger.logInfo('session', req.cookies.GDSSESSIONID);
+                global.gdsLogger.logInfo('skippedSessionValidation', skippedSessionValidation);
                 if (skippedSessionValidation) {
                     next();
                 } else {
-                    services.securityServicePort.links.validateSession.execute({
+                    global.gdsServices.securityServicePort.links.validateSession.execute({
                         params: { sessionId: req.cookies.GDSSESSIONID }
-                    }, function(err) {
+                    }, function (err) {
                         if (!err) {
                             next();
                         } else {
@@ -42,22 +43,22 @@ function execute(app, sockets, services) {
             }
         });
     });
-    app.get(API + 'update-services', function(req, res) {
-        services = {};
-        new InitServices(function(errUpdates, updateServices) {
+    app.get(API + 'update-services', function (req, res) {
+        global.gdsServices = {};
+        gdsService.initServices(function (errUpdates, updateServices) {
             if (errUpdates) {
                 res.status(500).send(errUpdates);
             } else {
-                services = updateServices;
-                res.status(200).send(services);
+                global.gdsServices = updateServices;
+                res.status(200).send(global.gdsServices);
             }
         });
     });
-    app.get(API, function(req, res) {
-        res.status(200).send(services);
+    app.get(API, function (req, res) {
+        res.status(200).send(global.gdsServices);
     });
-    app.get(API + ':serviceName', function(req, res) {
-        var service = lodash.get(services, req.params.serviceName);
+    app.get(API + ':serviceName', function (req, res) {
+        var service = lodash.get(global.gdsServices, req.params.serviceName);
         if (!service) {
             res.status(500).send({
                 message: 'Service: ' + req.params.serviceName + ' does not exists or not running.'
@@ -66,11 +67,11 @@ function execute(app, sockets, services) {
             res.status(200).send(service);
         }
     });
-    app.use(API + ':serviceName/:link', function(req, res, next) {
+    app.use(API + ':serviceName/:link', function (req, res, next) {
         if (req.baseUrl.indexOf('/gds/export/') > -1 || req.baseUrl.indexOf('/gds/login/') > -1 || req.baseUrl.indexOf('/gds/scanner/') > -1) {
             next();
         } else {
-            var service = lodash.get(services, req.params.serviceName);
+            var service = lodash.get(global.gdsServices, req.params.serviceName);
             if (!service) {
                 res.status(500).send({
                     message: 'Service: ' + req.params.serviceName + ' does not exists or not running.'
@@ -96,7 +97,7 @@ function execute(app, sockets, services) {
                     lodash.unset(req.query, 'isFile');
                     lodash.unset(req.query, 'multipartField');
                     if (params) {
-                        new GetParamObject(params, function(errParam, paramOs) {
+                        new GetParamObject(params, function (errParam, paramOs) {
                             if (errParam) {
                                 res.status(500).send(errParam);
                             } else {
@@ -106,7 +107,7 @@ function execute(app, sockets, services) {
                     }
                     var data = req.body;
                     if (multipart) {
-                        console.log('req', req.files);
+                        global.gdsLogger.logInfo('req', req.files);
                         data = req.files.file;
                     }
                     link.execute({
@@ -116,19 +117,19 @@ function execute(app, sockets, services) {
                         query: req.query,
                         data: data,
                         decoding: !!isFile ? 'buffer' : 'utf8'
-                    }, function(errorLinkPost, result) {
+                    }, function (errorLinkPost, result) {
                         if (errorLinkPost || !result) {
                             res.status(500).send(errorLinkPost);
                         } else {
                             if (isFile && result.response) {
-                                lodash.forEach(result.response.headers, function(value, key) {
-                                    console.log('header', key + ':' + value);
+                                lodash.forEach(result.response.headers, function (value, key) {
+                                    global.gdsLogger.logInfo('header', key + ':' + value);
                                     res.setHeader(key, value);
                                 });
                             }
                             res.status(200).send(result.data);
                             if ($event) {
-                                console.log('$event', $event);
+                                global.gdsLogger.logInfo('$event', $event);
                                 sockets.emit($event, result.data);
                             }
                         }
