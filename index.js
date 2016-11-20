@@ -15,13 +15,13 @@ var LoginResource = require('./src/boundary/login-resource');
 var ImportEvents = require('./src/events/importer.events');
 var WakeMeUp = require('./src/control/common/wake-me-up');
 var GdsConfig = new require('gds-config');
-var gdsUtil = new GdsConfig.GDSUtil;
-var gdsService = new GdsConfig.GDSServices;
+var gdsUtil = new GdsConfig.GDSUtil; // jshint ignore:line
+var gdsService = new GdsConfig.GDSServices; // jshint ignore:line
 
-(function () {
+(function() {
     //new Database();
-    gdsUtil.getLogger(function (err) {
-        gdsService.initServices(function (err, services) {
+    gdsUtil.getLogger(function(err) {
+        gdsService.initServices(function(err, services) {
             if (err) {
                 global.gdsLogger.logError(err);
                 throw err;
@@ -29,7 +29,7 @@ var gdsService = new GdsConfig.GDSServices;
                 global.gdsServices = services;
                 new Server(app);
                 new ServerCors(app, cors);
-                new Socket(app, io, http, function (err, sockets) {
+                new Socket(app, io, http, function(err, sockets) {
                     new GdsApisResource(app, sockets);
                     new ScannerResource(app, sockets, services);
                     new ExportResource(app, sockets, services);

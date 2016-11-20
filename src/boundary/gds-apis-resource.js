@@ -4,7 +4,7 @@ var lodash = require('lodash');
 var GetParamObject = require('../control/service/get-param-object');
 var SKIPPED_SESSION_CONTEXT = process.env.SKIPPED_SESSION_CONTEXT || 'gds/scanner,gds/login,gds,gds/update-service,gds/schoolConfigServicePort,api/users/register';
 var GdsConfig = new require('gds-config');
-var gdsService = new GdsConfig.GDSServices;
+var gdsService = new GdsConfig.GDSServices;// jshint ignore:line
 
 function execute(app, sockets) {
     app.use('/gds/*', function (req, res, next) {
