@@ -17,16 +17,16 @@ var WakeMeUp = require('./src/control/common/wake-me-up');
 var GdsConfig = new require('gds-config');
 var gdsUtil = new GdsConfig.GDSUtil; // jshint ignore:line
 var gdsService = new GdsConfig.GDSServices; // jshint ignore:line
-
+var ServiceApi = new GdsConfig.GDSServiceAPI;
 (function() {
     //new Database();
     gdsUtil.getLogger(function(err) {
-        gdsService.initServices(function(err, services) {
+        gdsService.initServices(function(err) {
             if (err) {
                 global.gdsLogger.logError(err);
                 throw err;
             } else {
-                global.gdsServices = services;
+                var services = new ServiceApi();
                 new Server(app);
                 new ServerCors(app, cors);
                 new Socket(app, io, http, function(err, sockets) {
