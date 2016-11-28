@@ -5,8 +5,9 @@ var GetParamObject = require('../control/service/get-param-object');
 var SKIPPED_SESSION_CONTEXT = process.env.SKIPPED_SESSION_CONTEXT || 'gds/scanner,gds/login,gds,gds/update-service,gds/schoolConfigServicePort,api/users/register';
 var GdsConfig = new require('gds-config');
 var gdsService = new GdsConfig.GDSServices;// jshint ignore:line
-
+var GDSServiceAPI = GdsConfig.GDSServiceAPI;
 function execute(app, sockets) {
+    var services = new GDSServiceAPI();
     app.use('/gds/*', function (req, res, next) {
         global.gdsLogger.logInfo('Validating host ' + req.headers.host);
         var skippedValidationContexts = SKIPPED_SESSION_CONTEXT.split(',');
@@ -17,7 +18,7 @@ function execute(app, sockets) {
                 break;
             }
         }
-        global.gdsServices.securityServicePort.links.validateHost.execute({
+       services.securityServicePort.links.validateHost.execute({
             params: { host: req.headers.host } // TODO: Improve security host configuration
         }, function (errHost) {
             if (errHost) {
@@ -28,7 +29,7 @@ function execute(app, sockets) {
                 if (skippedSessionValidation) {
                     next();
                 } else {
-                    global.gdsServices.securityServicePort.links.validateSession.execute({
+                   services.securityServicePort.links.validateSession.execute({
                         params: { sessionId: req.cookies.GDSSESSIONID }
                     }, function (err) {
                         if (!err) {
@@ -44,21 +45,20 @@ function execute(app, sockets) {
         });
     });
     app.get(API + 'update-services', function (req, res) {
-        global.gdsServices = {};
-        gdsService.initServices(function (errUpdates, updateServices) {
+        gdsService.initServices(function (errUpdates) {
             if (errUpdates) {
                 res.status(500).send(errUpdates);
             } else {
-                global.gdsServices = updateServices;
-                res.status(200).send(global.gdsServices);
+                services = new GDSServiceAPI();
+                res.status(200).sendservices);
             }
         });
     });
     app.get(API, function (req, res) {
-        res.status(200).send(global.gdsServices);
+        res.status(200).send(services);
     });
     app.get(API + ':serviceName', function (req, res) {
-        var service = lodash.get(global.gdsServices, req.params.serviceName);
+        var service = lodash.get(services, req.params.serviceName);
         if (!service) {
             res.status(500).send({
                 message: 'Service: ' + req.params.serviceName + ' does not exists or not running.'
@@ -71,7 +71,7 @@ function execute(app, sockets) {
         if (req.baseUrl.indexOf('/gds/export/') > -1 || req.baseUrl.indexOf('/gds/login/') > -1 || req.baseUrl.indexOf('/gds/scanner/') > -1) {
             next();
         } else {
-            var service = lodash.get(global.gdsServices, req.params.serviceName);
+            var service = lodash.get(services, req.params.serviceName);
             if (!service) {
                 res.status(500).send({
                     message: 'Service: ' + req.params.serviceName + ' does not exists or not running.'
