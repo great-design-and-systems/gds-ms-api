@@ -50,7 +50,7 @@ function execute(app, sockets) {
                 res.status(500).send(errUpdates);
             } else {
                 services = new GDSServiceAPI();
-                res.status(200).sendservices);
+                res.status(200).send(services);
             }
         });
     });
