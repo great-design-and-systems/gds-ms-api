@@ -17,7 +17,7 @@ var WakeMeUp = require('./src/control/common/wake-me-up');
 var GdsConfig = new require('gds-config');
 var gdsUtil = new GdsConfig.GDSUtil; // jshint ignore:line
 var gdsService = new GdsConfig.GDSServices; // jshint ignore:line
-var ServiceApi = new GdsConfig.GDSServiceAPI;
+var ServiceApi = GdsConfig.GDSServiceAPI;
 (function() {
     //new Database();
     gdsUtil.getLogger(function(err) {
