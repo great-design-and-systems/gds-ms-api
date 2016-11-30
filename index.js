@@ -18,10 +18,10 @@ var GdsConfig = new require('gds-config');
 var gdsUtil = new GdsConfig.GDSUtil; // jshint ignore:line
 var gdsService = new GdsConfig.GDSServices; // jshint ignore:line
 var ServiceApi = GdsConfig.GDSServiceAPI;
-(function() {
+(function () {
     //new Database();
-    gdsUtil.getLogger(function(err) {
-        gdsService.initServices(function(err) {
+    gdsUtil.getLogger(function (err) {
+        gdsService.initServices(function (err) {
             if (err) {
                 global.gdsLogger.logError(err);
                 throw err;
@@ -29,7 +29,7 @@ var ServiceApi = GdsConfig.GDSServiceAPI;
                 var services = new ServiceApi();
                 new Server(app);
                 new ServerCors(app, cors);
-                new Socket(app, io, http, function(err, sockets) {
+                new Socket(app, io, http, function (err, sockets) {
                     new GdsApisResource(app, sockets);
                     new ScannerResource(app, sockets, services);
                     new ExportResource(app, sockets, services);
