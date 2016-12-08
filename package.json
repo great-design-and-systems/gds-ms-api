@@ -20,6 +20,7 @@
   "author": "Jerico de Guzman",
   "license": "MIT",
   "dependencies": {
+    "batchflow": "^0.4.0",
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
     "chakram": "^1.4.0",

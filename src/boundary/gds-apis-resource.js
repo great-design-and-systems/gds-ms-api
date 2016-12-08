@@ -67,6 +67,7 @@ function execute(app, sockets) {
             res.status(200).send(service);
         }
     });
+
     app.use(API + ':serviceName/:link', function (req, res, next) {
         if (req.baseUrl.indexOf('/gds/export/') > -1 || req.baseUrl.indexOf('/gds/login/') > -1 || req.baseUrl.indexOf('/gds/scanner/') > -1) {
             next();
@@ -140,6 +141,7 @@ function execute(app, sockets) {
         }
 
     });
+    
 }
 
 module.exports = execute;
