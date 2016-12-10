@@ -6,6 +6,7 @@ var SKIPPED_SESSION_CONTEXT = process.env.SKIPPED_SESSION_CONTEXT || 'gds/scanne
 var GdsConfig = new require('gds-config');
 var gdsService = new GdsConfig.GDSServices;// jshint ignore:line
 var GDSServiceAPI = GdsConfig.GDSServiceAPI;
+var GetGdsApi = require('../control/service/get-gds-api');
 function execute(app, sockets) {
     var services = new GDSServiceAPI();
     app.use('/gds/*', function (req, res, next) {
@@ -18,7 +19,7 @@ function execute(app, sockets) {
                 break;
             }
         }
-       services.securityServicePort.links.validateHost.execute({
+        services.securityServicePort.links.validateHost.execute({
             params: { host: req.headers.host } // TODO: Improve security host configuration
         }, function (errHost) {
             if (errHost) {
@@ -29,7 +30,7 @@ function execute(app, sockets) {
                 if (skippedSessionValidation) {
                     next();
                 } else {
-                   services.securityServicePort.links.validateSession.execute({
+                    services.securityServicePort.links.validateSession.execute({
                         params: { sessionId: req.cookies.GDSSESSIONID }
                     }, function (err) {
                         if (!err) {
@@ -55,7 +56,13 @@ function execute(app, sockets) {
         });
     });
     app.get(API, function (req, res) {
-        res.status(200).send(services);
+        new GetGdsApi(req.hostname, services, function (err, result) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(200).send(result);
+            }
+        });
     });
     app.get(API + ':serviceName', function (req, res) {
         var service = lodash.get(services, req.params.serviceName);
@@ -141,7 +148,7 @@ function execute(app, sockets) {
         }
 
     });
-    
+
 }
 
 module.exports = execute;
