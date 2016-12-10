@@ -2,12 +2,20 @@ var batch = require('batchflow');
 var lodash = require('lodash');
 
 function GetGdsApi(host, services, callback) {
-    batch(services).sequential()
+    var api = {};
+    batch(services).parallel()
         .each(function (field, domain, done) {
+            lodash.set(api, field, {});
+            var apiField = lodash.get(api, field);
+            apiField.domain = domain.domain;
+            apiField.links = {};
             try {
                 batch(domain.links)
-                    .sequential()
+                    .parallel()
                     .each(function (key, value, next) {
+                        lodash.set(apiField.links, key, {});
+                        var link = lodash.get(apiField.links, key);
+                        link.method = value.method;
                         var newUrl = value.url.replace(/(http:|https:)/, '');
                         newUrl = newUrl.replace(host, '');
                         var params = {};
@@ -22,10 +30,9 @@ function GetGdsApi(host, services, callback) {
                                     });
                                     newLink = newLink.substr(0, newLink.length - 1);
                                 }
-                                value.url = newLink;
+                                link.url = newLink;
                                 next();
                             } catch (err) {
-                                console.log('batch =>', err);
                                 callback(err);
                             }
                         });
@@ -39,7 +46,7 @@ function GetGdsApi(host, services, callback) {
             }
         })
         .end(function () {
-            callback(undefined, services);
+            callback(undefined, api);
         });
 }
 
