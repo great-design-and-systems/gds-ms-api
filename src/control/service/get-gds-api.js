@@ -9,6 +9,7 @@ function GetGdsApi(host, services, callback) {
                     .sequential()
                     .each(function (key, value, next) {
                         var newUrl = value.url.replace(/(http:|https:)/, '');
+                        newUrl = newUrl.replace(host, '');
                         var params = {};
                         var newLink = 'http://' + host + '/gds/' + key;
                         parseParams(newUrl.split(''), function (err, params) {
@@ -56,7 +57,9 @@ function parseParams(urlArr, callback, params, index, started, context) {
                 context = '';
             } else if (started && urlArr[index] === '/') {
                 started = false;
-                params.push(context);
+                if (!(/:[0-9]+/g.test(':' + context))) {
+                    params.push(context);
+                }
             } else if (started) {
                 context += urlArr[index];
             }
@@ -65,7 +68,9 @@ function parseParams(urlArr, callback, params, index, started, context) {
             });
         } else {
             if (context.length) {
-                params.push(context);
+                if (!(/:[0-9]+/g.test(':' + context))) {
+                    params.push(context);
+                }
             }
             callback(undefined, params);
         }

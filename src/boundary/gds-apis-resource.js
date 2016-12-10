@@ -56,7 +56,9 @@ function execute(app, sockets) {
         });
     });
     app.get(API, function (req, res) {
-        new GetGdsApi(req.hostname, services, function (err, result) {
+        var api = {};
+        lodash.assignIn(api, services);
+        new GetGdsApi(req.headers.host, api, function (err, result) {
             if (err) {
                 res.status(500).send(err);
             } else {
