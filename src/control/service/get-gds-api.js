@@ -51,7 +51,6 @@ function GetGdsApi(host, services, callback) {
         });
 }
 
-'use strict';
 function parseParams(urlArr, callback, params, index, started, context) {
     try {
         if (!index) {
