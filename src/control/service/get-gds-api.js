@@ -20,7 +20,6 @@ function GetGdsApi(host, services, callback) {
                         link.method = value.method;
                         var newUrl = value.url.replace(/(http:|https:)/, '');
                         newUrl = newUrl.replace(host, '');
-                        var params = {};
                         var newLink = 'http://' + host + '/gds/' + field + '/' + key;
                         parseParams(newUrl.split(''), function (err, params) {
                             try {
