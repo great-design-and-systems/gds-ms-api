@@ -1,3 +1,5 @@
+'use strict';
+
 var batch = require('batchflow');
 var lodash = require('lodash');
 
@@ -50,10 +52,11 @@ function GetGdsApi(host, services, callback) {
         });
 }
 
+'use strict';
 function parseParams(urlArr, callback, params, index, started, context) {
     try {
         if (!index) {
-            index = 0
+            index = 0;
         }
         if (!params) {
             params = [];
