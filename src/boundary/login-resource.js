@@ -2,7 +2,7 @@
 var API = process.env.API_NAME || '/gds/login';
 module.exports = function (app, sockets, services) {
     app.post(API, function (req, res) {
-        services.userServicePort.links.userPassword.execute({
+        services.authenticationServicePort.links.userPassword.execute({
             params: {
                 username: req.body.username
             }
@@ -12,7 +12,7 @@ module.exports = function (app, sockets, services) {
                     message: 'Invalid username or password'
                 });
             } else {
-                services.securityServicePort.links.validatePassword.execute({
+                services.authenticationServicePort.links.validatePassword.execute({
                     data: {
                         currentPassword: resultUserPassword.data.password,
                         password: req.body.password
@@ -23,7 +23,7 @@ module.exports = function (app, sockets, services) {
                             message: 'Invalid username or password'
                         });
                     } else {
-                        services.securityServicePort.links.createUserSession.execute({
+                        services.authenticationServicePort.links.createUserSession.execute({
                             data: {
                             	username: req.body.username
                             }
